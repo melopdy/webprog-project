@@ -11,7 +11,10 @@ const PORT = process.env.PORT || 3000;
 // ── 미들웨어 ──────────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: 'https://webprog-project-front.vercel.app',
+  origin: [
+    'https://webprog-project-front.vercel.app',
+    /https:\/\/webprog-project-frontend-.*\.vercel\.app$/,  // 프리뷰 URL 전체 허용
+  ],
   credentials: true,
 }));
 app.use(express.json());

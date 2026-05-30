@@ -10,7 +10,10 @@ const PORT = process.env.PORT || 3000;
 
 // ── 미들웨어 ──────────────────────────────────────
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: 'https://webprog-project-front.vercel.app',
+  credentials: true,
+}));
 app.use(express.json());
 
 // ── PostgreSQL 연결 ──────────────────────────────

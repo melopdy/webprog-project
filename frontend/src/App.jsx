@@ -7,7 +7,7 @@ function App() {
 
   // 새로고침해도 세션 유지 확인
   useEffect(() => {
-    fetch('/api/me', { credentials: 'include' })
+    fetch(`${import.meta.env.VITE_API_URL}/api/me`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         setLoggedIn(data.loggedIn);
@@ -24,7 +24,7 @@ function App() {
     <div className="app">
       <h1>관리자 페이지</h1>
       <button onClick={async () => {
-        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, { method: 'POST', credentials: 'include' });
         setLoggedIn(false);
       }}>
         로그아웃

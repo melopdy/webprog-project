@@ -94,5 +94,32 @@ app.post('/api/cache/:key', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ── 로그인 ────────────────────────────────────────
+app.post('/api/login', (req, res) => {
+  const { id, password } = req.body;
+
+  if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
+    req.session.isLoggedIn = true;
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ ok: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
+  }
+});
+
+// ── 로그아웃 ──────────────────────────────────────
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ ok: true });
+});
+
+// ── 세션 확인 ─────────────────────────────────────
+app.get('/api/me', (req, res) => {
+  if (req.session.isLoggedIn) {
+    res.json({ loggedIn: true });
+  } else {
+    res.status(401).json({ loggedIn: false });
+  }
+});
+
 // ── 서버 시작 ─────────────────────────────────────
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

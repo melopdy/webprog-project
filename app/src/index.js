@@ -28,12 +28,11 @@ pool.connect()
 // ── Redis 연결 (환경에 따라 분기) ─────────────────
 let redisClient;
 
-if (process.env.UPSTASH_REDIS_REST_URL) {
-  // Vercel 배포 환경 → Upstash
+if (process.env.KV_REST_API_URL) {
   const { Redis } = require('@upstash/redis');
   redisClient = new Redis({
-    url:   process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    url:   process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
   });
   console.log('✅ Redis connected (Upstash)');
 } else {
@@ -67,7 +66,7 @@ app.use(session({
 app.get('/api/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
-    const isRedisReady = process.env.UPSTASH_REDIS_REST_URL
+    const isRedisReady = process.env.KV_REST_API_URL
       ? true
       : redisClient.isReady;
     res.json({ status: 'ok', db: 'connected', redis: isRedisReady });

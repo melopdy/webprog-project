@@ -8,9 +8,21 @@ services:
       - "80:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro  # React 빌드 결과
     depends_on:
       - app
     restart: unless-stopped
+
+  frontend:
+  image: node:20-alpine
+  working_dir: /app
+  volumes:
+    - ./frontend:/app
+    - /app/node_modules
+  command: sh -c "npm install && npm run dev -- --host"
+  ports:
+    - "5173:5173"    # 개발 시 직접 접속용
+  restart: unless-stopped
 
   app:
     build:

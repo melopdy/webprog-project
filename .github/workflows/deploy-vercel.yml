@@ -51,6 +51,14 @@ jobs:
           test -f src/index.js && echo "✅ entry point exists" || exit 1
         working-directory: ./app
 
+      - name: Install frontend dependencies  # ← 추가
+        run: npm install
+        working-directory: ./frontend
+
+      - name: Build React                     # ← 추가
+        run: npm run build
+        working-directory: ./frontend
+
   # ── 3단계: 배포 ────────────────────────────────
   deploy:
     needs: build

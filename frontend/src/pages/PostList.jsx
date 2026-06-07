@@ -35,7 +35,7 @@ export default function PostList({ loggedIn, onLogout }) {
           : posts.map(post => (
             <div key={post.id} onClick={() => navigate(`/post/${post.id}`)}>
               <h2>{post.title}</h2>
-              <span>{new Date(post.created_at).toLocaleDateString('ko-KR')}</span>
+              <span>{post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}</span>
             </div>
           ))
         }

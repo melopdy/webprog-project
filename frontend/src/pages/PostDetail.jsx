@@ -34,7 +34,7 @@ export default function PostDetail({ loggedIn }) {
       </header>
       <main>
         <h1>{post.title}</h1>
-        <span>{new Date(post.created_at).toLocaleDateString('ko-KR')}</span>
+        <span>{post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}</span>
         <p>{post.content}</p>
         {post.images?.map((img, i) => (
           <img key={i} src={img.url} alt={img.filename} style={{ maxWidth: '100%' }} />

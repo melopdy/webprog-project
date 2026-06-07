@@ -76,12 +76,17 @@ if (process.env.KV_REST_API_URL) {
   const upstash = new Redis({
     url:   process.env.KV_REST_API_URL,
     token: process.env.KV_REST_API_TOKEN,
+    automaticDeserialization: false,
   });
 
   class UpstashStore extends Store {
     get(sid, cb) {
       upstash.get(`sess:${sid}`)
-        .then(d => cb(null, d ? JSON.parse(d) : null))
+        .then(d => {
+          if (!d) return cb(null, null);
+          const data = typeof d === 'string' ? JSON.parse(d) : d;
+          cb(null, data);
+        })
         .catch(cb);
     }
     set(sid, sess, cb) {

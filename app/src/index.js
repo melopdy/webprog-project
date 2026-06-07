@@ -77,8 +77,14 @@ if (process.env.KV_REST_API_URL) {
   const upstash = new Redis({
     url:   process.env.KV_REST_API_URL,
     token: process.env.KV_REST_API_TOKEN,
+    automaticDeserialization: false,
   });
-  sessionStore = new RedisStore({ client: upstash });
+  
+  sessionStore = new RedisStore({
+    client:  upstash,
+    prefix:  'sess:',
+    ttl:     86400,
+  });
 }
 
 // ── 세션 ─────────────────────────────────────────

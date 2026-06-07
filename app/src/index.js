@@ -67,6 +67,20 @@ if (process.env.KV_REST_API_URL) {
     .catch(err => console.error('❌ Redis error:', err.message));
 }
 
+// ── 세션 스토어 설정 ──────────────────────────────
+let sessionStore;
+
+if (process.env.KV_REST_API_URL) {
+  const { Redis } = require('@upstash/redis');
+  const RedisStore = require('connect-redis').default;
+
+  const upstash = new Redis({
+    url:   process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
+  });
+  sessionStore = new RedisStore({ client: upstash });
+}
+
 // ── 세션 ─────────────────────────────────────────
 app.use(session({
   store:             sessionStore,

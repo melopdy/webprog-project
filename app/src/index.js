@@ -72,7 +72,7 @@ let sessionStore;
 
 if (process.env.KV_REST_API_URL) {
   const { Redis } = require('@upstash/redis');
-  const RedisStore = require('connect-redis').default;
+  const RedisStore = require('connect-redis');
 
   const upstash = new Redis({
     url:   process.env.KV_REST_API_URL,

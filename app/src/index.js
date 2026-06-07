@@ -159,11 +159,12 @@ app.post('/api/login', (req, res) => {
 
   if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
     req.session.isLoggedIn = true;
-    req.session.save((err) => {  // ← 명시적 저장
+    req.session.save((err) => {
       if (err) {
         console.error('세션 저장 오류:', err);
-        return res.status(500).json({ ok: false });
+        return res.status(500).json({ ok: false, error: err.message });
       }
+      console.log('세션 저장 성공, SID:', req.session.id);
       res.json({ ok: true });
     });
   } else {

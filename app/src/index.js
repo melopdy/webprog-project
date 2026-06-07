@@ -259,12 +259,13 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
   try {
     if (!req.file) return res.status(400).json({ error: '파일이 없습니다.' });
 
-    const { originalname, buffer, mimetype } = req.file;
-    // 💡 한글 파일명을 다시 UTF-8로 복원
+    const { buffer, mimetype } = req.file;
+    // 한글 파일명을 다시 UTF-8로 복원
     const originalname = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+    const fileBuffer = Buffer.from(buffer);
 
     // 원본 그대로 업로드
-    const blob = await put(originalname, buffer, {
+    const blob = await put(originalname, fileBuffer, {
       access: 'public',
       contentType: mimetype,
       token: process.env.BLOB_READ_WRITE_TOKEN,  // 로컬 오류로 인해 직접 전달로 변경
@@ -272,7 +273,7 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
 
     res.json({ url: blob.url, filename: originalname, mimetype });
   } catch (err) {
-    console.error('❌ Upload error:', err.message); // ← 추가
+    console.error('Upload error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

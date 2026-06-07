@@ -278,5 +278,38 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
   }
 });
 
+// ── 게시글 수정 (로그인 필요) ─────────────────────
+app.put('/api/posts/:id', requireLogin, async (req, res) => {
+  const { id } = req.params;
+  const { title, content, imageUrls } = req.body;
+
+  if (!title) return res.status(400).json({ error: '제목을 입력해주세요.' });
+
+  try {
+    // 게시글 내용 업데이트
+    await pool.query(
+      'UPDATE posts SET title = $1, content = $2 WHERE id = $3',
+      [title, content, id]
+    );
+
+    // 기존에 연결되어 있던 이미지 일단 삭제
+    await pool.query('DELETE FROM post_images WHERE post_id = $1', [id]);
+
+    // 현재 수정 화면에 남아있는 이미지를 목록으로 새로 저장
+    if (imageUrls && imageUrls.length > 0) {
+      for (const img of imageUrls) {
+        await pool.query(
+          'INSERT INTO post_images (post_id, url, filename, mimetype) VALUES ($1, $2, $3, $4)',
+          [id, img.url, img.filename, img.mimetype]
+        );
+      }
+    }
+
+    res.json({ ok: true, message: '게시글이 성공적으로 수정되었습니다.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── 서버 시작 ─────────────────────────────────────
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

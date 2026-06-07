@@ -40,6 +40,12 @@ export default function PostWrite() {
     }
   };
 
+  // 선택한 이미지 지우기
+  const handleRemoveImage = (indexToRemove) => {
+    // 선택된 인덱스 번호와 일치하지 않는 이미지들만 남기기
+    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   // 게시글 저장
     const handleSubmit = async () => {
         if (!title) return alert('제목을 입력해주세요.');
@@ -104,9 +110,18 @@ export default function PostWrite() {
           onChange={handleImageUpload}
         />
         {images.length > 0 && (
-          <div>
+          <div className="image-preview-container">
             {images.map((img, i) => (
-              <img key={i} src={img.url} alt={img.filename} width={200} />
+              <div key={i} className="image-wrapper">
+                <img src={img.url} alt={img.filename} width={200} />
+                <button 
+                  type="button" 
+                  className="remove-btn"
+                  onClick={() => handleRemoveImage(i)} // 버튼 클릭 시 배열에서 제거
+                >
+                  X
+                </button>
+              </div>
             ))}
           </div>
         )}

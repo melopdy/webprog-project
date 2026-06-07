@@ -35,7 +35,16 @@ export default function PostList({ loggedIn, onLogout }) {
           : posts.map(post => (
             <div key={post.id} onClick={() => navigate(`/post/${post.id}`)}>
               <h2>{post.title}</h2>
-              <span>{post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}</span>
+              <div className="post-date-info">
+                <span className="created-date">
+                    {post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}
+                </span>
+                {post.updated_at && (
+                    <span className="updated-date">
+                    (수정됨: {new Date(post.updated_at).toLocaleDateString('ko-KR')})
+                    </span>
+                )}
+                </div>
             </div>
           ))
         }

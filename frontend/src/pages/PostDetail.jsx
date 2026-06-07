@@ -31,13 +31,27 @@ export default function PostDetail({ loggedIn }) {
 
   return (
     <div className="container">
-      <header>
+      <header style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button onClick={() => navigate('/')}>← 목록</button>
-        {loggedIn && <button onClick={handleDelete}>삭제</button>}
+        {loggedIn && (
+          <div style={{ display: 'flex', gap: '8px' }}> {/* div로 묶어서 오른쪽 정렬 유지 */}
+            <button onClick={() => navigate(`/edit/${id}`)}>수정</button>
+            <button onClick={handleDelete}>삭제</button>
+          </div>
+        )}
       </header>
       <main>
         <h1>{post.title}</h1>
-        <span>{post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}</span>
+        <div className="post-date-info">
+          <span className="created-date">
+            {post.created_at ? new Date(post.created_at).toLocaleDateString('ko-KR') : ''}
+          </span>
+          {post.updated_at && (
+            <span className="updated-date">
+              (수정됨: {new Date(post.updated_at).toLocaleDateString('ko-KR')})
+            </span>
+          )}
+        </div>
         <p>{post.content}</p>
         {post.images?.map((img, i) => (
           <img key={i} src={img.url} alt={img.filename} style={{ maxWidth: '100%' }} />

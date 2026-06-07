@@ -157,7 +157,7 @@ app.get('/api/me', requireLogin, (req, res) => {
 app.get('/api/posts', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, title, created_at FROM posts ORDER BY created_at DESC'
+      'SELECT id, title, created_at, updated_at FROM posts ORDER BY created_at DESC'
     );
     res.json(rows);
   } catch (err) {
@@ -230,8 +230,11 @@ app.post('/api/posts', requireLogin, async (req, res) => {
 
 // ── 게시글 삭제 (로그인 필요) ─────────────────────
 app.delete('/api/posts/:id', requireLogin, async (req, res) => {
+  const { id } = req.params; // URL에서 id 추출
   try {
-    await pool.query('DELETE FROM posts WHERE id = $1', [req.params.id]);
+    await pool.query('DELETE FROM post_images WHERE post_id = $1', [id]);
+    await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -288,7 +291,7 @@ app.put('/api/posts/:id', requireLogin, async (req, res) => {
   try {
     // 게시글 내용 업데이트
     await pool.query(
-      'UPDATE posts SET title = $1, content = $2 WHERE id = $3',
+      'UPDATE posts SET title = $1, content = $2, updated_at = NOW() WHERE id = $3',
       [title, content, id]
     );
 

@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import PostList from './pages/PostList';
 import PostWrite from './pages/PostWrite';
 import PostDetail from './pages/PostDetail';
+import PostEdit from './pages/PostEdit';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -78,6 +79,10 @@ function App() {
           path="/post/:id"
           element={<PostDetail loggedIn={loggedIn} />}
         />
+
+        <Route 
+          path="/edit/:id"
+          element={<PostEdit />} />
 
       </Routes>
     </BrowserRouter>

@@ -69,13 +69,15 @@ if (process.env.KV_REST_API_URL) {
 
 // ── 세션 ─────────────────────────────────────────
 app.use(session({
+  store:             sessionStore,
   secret:            process.env.SESSION_SECRET || 'dev-secret',
   resave:            false,
   saveUninitialized: false,
   cookie: {
-    secure:   process.env.NODE_ENV === 'production',
+    secure:   process.env.NODE_ENV === 'production', // 로컬은 false
     httpOnly: true,
     maxAge:   1000 * 60 * 60 * 24,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 크로스 도메인 쿠키 허용
   },
 }));
 

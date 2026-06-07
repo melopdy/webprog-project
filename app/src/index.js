@@ -72,19 +72,33 @@ let sessionStore;
 
 if (process.env.KV_REST_API_URL) {
   const { Redis } = require('@upstash/redis');
-  const RedisStore = require('connect-redis');
+  const Store = require('express-session').Store;
 
   const upstash = new Redis({
     url:   process.env.KV_REST_API_URL,
     token: process.env.KV_REST_API_TOKEN,
-    automaticDeserialization: false,  // ← 추가
+    automaticDeserialization: false,
   });
 
-  sessionStore = new RedisStore({
-    client:  upstash,
-    prefix:  'sess:',
-    ttl:     86400,
-  });
+  class UpstashStore extends Store {
+    get(sid, cb) {
+      upstash.get(`sess:${sid}`)
+        .then(d => cb(null, d ? JSON.parse(d) : null))
+        .catch(cb);
+    }
+    set(sid, sess, cb) {
+      upstash.set(`sess:${sid}`, JSON.stringify(sess), { ex: 86400 })
+        .then(() => cb(null))
+        .catch(cb);
+    }
+    destroy(sid, cb) {
+      upstash.del(`sess:${sid}`)
+        .then(() => cb(null))
+        .catch(cb);
+    }
+  }
+
+  sessionStore = new UpstashStore();
 }
 
 // API 캐시 방지 (Vercel Set-Cookie 문제 해결)

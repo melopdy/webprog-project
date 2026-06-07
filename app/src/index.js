@@ -150,7 +150,13 @@ app.post('/api/login', (req, res) => {
 
   if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
     req.session.isLoggedIn = true;
-    res.json({ ok: true });
+    req.session.save((err) => {  // ← 명시적 저장
+      if (err) {
+        console.error('세션 저장 오류:', err);
+        return res.status(500).json({ ok: false });
+      }
+      res.json({ ok: true });
+    });
   } else {
     res.status(401).json({ ok: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
   }

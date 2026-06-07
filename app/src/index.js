@@ -70,21 +70,13 @@ if (process.env.KV_REST_API_URL) {
 // ── 세션 스토어 설정 ──────────────────────────────
 let sessionStore;
 
-if (process.env.KV_REST_API_URL) {
-  const { Redis } = require('@upstash/redis');
+if (process.env.KV_URL) {
+  const redis = require('redis');
   const RedisStore = require('connect-redis').default;
 
-  const upstash = new Redis({
-    url:   process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-    automaticDeserialization: false,
-  });
-  
-  sessionStore = new RedisStore({
-    client:  upstash,
-    prefix:  'sess:',
-    ttl:     86400,
-  });
+  const client = redis.createClient({ url: process.env.KV_URL });
+  client.connect();
+  sessionStore = new RedisStore({ client });
 }
 
 // ── 세션 ─────────────────────────────────────────

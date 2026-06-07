@@ -1,8 +1,8 @@
 require('dotenv').config({ path: '.env.local' });
 require('dotenv').config();
 const express       = require('express');
+const jwt           = require('jsonwebtoken'); // jwt로 변경.. redis는 .vercel crossdomain 환경에서 쿠키를 보낼 수 없음
 const { Pool }      = require('pg');
-const session       = require('express-session');
 const cors          = require('cors');
 const helmet        = require('helmet');
 
@@ -107,20 +107,6 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// ── 세션 ─────────────────────────────────────────
-app.use(session({
-  store:             sessionStore,
-  secret:            process.env.SESSION_SECRET || 'dev-secret',
-  resave:            false,
-  saveUninitialized: false,
-  cookie: {
-    secure:   process.env.NODE_ENV === 'production', // 로컬은 false
-    httpOnly: true,
-    maxAge:   1000 * 60 * 60 * 24,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 크로스 도메인 쿠키 허용
-  },
-}));
-
 // ── 라우터 ────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
   try {
@@ -158,15 +144,16 @@ app.post('/api/login', (req, res) => {
   const { id, password } = req.body;
 
   if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
-    req.session.isLoggedIn = true;
-    req.session.save((err) => {
-      if (err) {
-        console.error('세션 저장 오류:', err);
-        return res.status(500).json({ ok: false, error: err.message });
-      }
-      console.log('세션 저장 성공, SID:', req.session.id);
-      res.json({ ok: true });
-    });
+    // 세션 저장 대신 JWT 토큰 발급, 유효기간 24시간
+    const token = jwt.sign(
+      { id: id }, 
+      process.env.SESSION_SECRET || 'dev-secret', // 기존 세션 시크릿키 재활용
+      { expiresIn: '24h' }
+    );
+    
+    console.log('JWT 토큰 발급 성공');
+    // 발급한 토큰을 클라이언트에게 전달
+    res.json({ ok: true, token }); 
   } else {
     res.status(401).json({ ok: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
   }
@@ -174,27 +161,38 @@ app.post('/api/login', (req, res) => {
 
 // ── 로그아웃 ──────────────────────────────────────
 app.post('/api/logout', (req, res) => {
-  req.session.destroy();
+  // JWT는 상태를 저장하지 않음
+  // 프론트엔드에서 localStorage에 있는 토큰을 지우기만 하면 됨
   res.json({ ok: true });
 });
 
-// ── 세션 확인 ─────────────────────────────────────
-app.get('/api/me', (req, res) => {
-  if (req.session.isLoggedIn) {
-    res.json({ loggedIn: true });
-  } else {
-    res.status(401).json({ loggedIn: false });
-  }
-});
-
-// ── 로그인 확인 미들웨어 ──────────────────────────
+// ── 로그인 확인 미들웨어 (JWT 검증) ────────────────
 const requireLogin = (req, res, next) => {
-  if (req.session.isLoggedIn) {
-    next();
-  } else {
-    res.status(401).json({ error: '로그인이 필요합니다.' });
+  // 프론트에서 보낸 Authorization 헤더 확인
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: '로그인이 필요합니다. (토큰 없음)' });
+  }
+
+  // 'Bearer 토큰값' 에서 토큰값만 추출
+  const token = authHeader.split(' ')[1];
+
+  try {
+    // 토큰 검증
+    const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'dev-secret');
+    req.user = decoded; // { id: 'admin' } 등이 담김
+    next(); // 검증 통과, 다음 라우터로 이동
+  } catch (err) {
+    return res.status(401).json({ error: '유효하지 않거나 만료된 토큰입니다.' });
   }
 };
+
+// ── 세션(토큰) 유효성 확인 ─────────────────────────
+app.get('/api/me', requireLogin, (req, res) => {
+  // requireLogin 미들웨어를 통과했다면 정상적인 토큰을 가진 유저
+  res.json({ loggedIn: true, user: req.user.id });
+});
 
 // ── 게시글 목록 ───────────────────────────────────
 app.get('/api/posts', async (req, res) => {
@@ -316,16 +314,6 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
     console.error('❌ Upload error:', err.message); // ← 추가
     res.status(500).json({ error: err.message });
   }
-});
-
-// test
-app.get('/api/test-cookie', (req, res) => {
-  res.cookie('test', 'hello', {
-    sameSite: 'none',
-    secure: true,
-    httpOnly: true,
-  });
-  res.json({ ok: true });
 });
 
 // ── 서버 시작 ─────────────────────────────────────

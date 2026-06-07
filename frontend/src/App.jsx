@@ -13,7 +13,22 @@ function App() {
 
   // 새로고침해도 세션 유지 확인
   useEffect(() => {
-    fetch(`${API}/api/me`, { credentials: 'include' })
+    // 로컬 스토리지에서 토큰 꺼내기
+    const token = localStorage.getItem('token');
+    
+    // 토큰이 아예 없다면 서버에 물어볼 필요도 없이 로그인 아웃 상태
+    if (!token) {
+      setLoggedIn(false);
+      setChecking(false);
+      return;
+    }
+
+    // 헤더에 토큰 실어서 백엔드에 유효한지 검사 요청
+    fetch(`${API}/api/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         setLoggedIn(data.loggedIn);
@@ -24,7 +39,7 @@ function App() {
 
   // 로그아웃 함수 분리
   const handleLogout = async () => {
-    await fetch(`${API}/api/logout`, { method: 'POST', credentials: 'include' });
+    localStorage.removeItem('token');
     setLoggedIn(false);
   };
 

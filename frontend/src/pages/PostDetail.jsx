@@ -9,7 +9,7 @@ export default function PostDetail({ loggedIn }) {
   const [post, setPost] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/api/posts/${id}`, { credentials: 'include' })
+    fetch(`${API}/api/posts/${id}`)
       .then(res => res.json())
       .then(data => setPost(data))
       .catch(err => console.error(err));
@@ -19,9 +19,12 @@ export default function PostDetail({ loggedIn }) {
 
   const handleDelete = async () => {
     if (!confirm('삭제하시겠습니까?')) return;
+    const token = localStorage.getItem('token');
     await fetch(`${API}/api/posts/${id}`, {
       method: 'DELETE',
-      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}` 
+      }
     });
     navigate('/');
   };

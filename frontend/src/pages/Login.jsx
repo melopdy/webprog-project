@@ -16,12 +16,13 @@ export default function Login({ onLogin }) {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ id, password }),
-        credentials: 'include',
       });
 
       const data = await res.json();
 
       if (data.ok) {
+        // 백엔드가 준 JWT 토큰을 로컬 스토리지에 저장
+        localStorage.setItem('token', data.token);
         onLogin();
       } else {
         setError(data.message);

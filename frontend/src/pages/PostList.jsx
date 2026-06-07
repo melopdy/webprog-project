@@ -8,7 +8,7 @@ export default function PostList({ loggedIn, onLogout }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API}/api/posts`, { credentials: 'include' })
+    fetch(`${API}/api/posts`)
       .then(res => res.json())
       .then(data => setPosts(data))
       .catch(err => console.error(err));

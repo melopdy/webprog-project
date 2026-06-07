@@ -26,7 +26,6 @@ app.use(cors({
     );
     callback(isAllowed ? null : new Error('CORS 차단'), isAllowed);
   },
-  credentials: true,
 }));
 app.use(express.json());
 
@@ -66,46 +65,6 @@ if (process.env.KV_REST_API_URL) {
     .then(() => console.log('✅ Redis connected (local)'))
     .catch(err => console.error('❌ Redis error:', err.message));
 }
-
-// ── 세션 스토어 설정 ──────────────────────────────
-let sessionStore;
-
-if (process.env.KV_REST_API_URL) {
-  const { Redis } = require('@upstash/redis');
-  const Store = require('express-session').Store;
-
-  const upstash = new Redis({
-    url:   process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-    automaticDeserialization: false,
-  });
-
-  class UpstashStore extends Store {
-    get(sid, cb) {
-      upstash.get(`sess:${sid}`)
-        .then(d => cb(null, d ? JSON.parse(d) : null))
-        .catch(cb);
-    }
-    set(sid, sess, cb) {
-      upstash.set(`sess:${sid}`, JSON.stringify(sess), { ex: 86400 })
-        .then(() => cb(null))
-        .catch(cb);
-    }
-    destroy(sid, cb) {
-      upstash.del(`sess:${sid}`)
-        .then(() => cb(null))
-        .catch(cb);
-    }
-  }
-
-  sessionStore = new UpstashStore();
-}
-
-// API 캐시 방지 (Vercel Set-Cookie 문제 해결)
-app.use('/api', (req, res, next) => {
-  res.set('Cache-Control', 'no-store');
-  next();
-});
 
 // ── 라우터 ────────────────────────────────────────
 app.get('/api/health', async (req, res) => {

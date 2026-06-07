@@ -317,5 +317,15 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
   }
 });
 
+// test
+app.get('/api/test-cookie', (req, res) => {
+  res.cookie('test', 'hello', {
+    sameSite: 'none',
+    secure: true,
+    httpOnly: true,
+  });
+  res.json({ ok: true });
+});
+
 // ── 서버 시작 ─────────────────────────────────────
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

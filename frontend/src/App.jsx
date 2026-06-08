@@ -49,13 +49,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        // 누구나 접근 가능
+        {/* 누구나 접근 가능 */}
         <Route
           path="/"
           element={<PostList loggedIn={loggedIn} onLogout={handleLogout} />}
         />
 
-        // 이미 로그인이면 메인으로
+        {/* 이미 로그인이면 메인으로 */}
         <Route
           path="/login"
           element={
@@ -65,7 +65,7 @@ function App() {
           }
         />
 
-        // 로그인 필요
+        {/* 로그인 필요 */}
         <Route
           path="/write"
           element={

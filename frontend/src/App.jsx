@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // 추가
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTheme } from './hooks/useTheme';
 import Login from './pages/Login';
 import PostList from './pages/PostList';
 import PostWrite from './pages/PostWrite';
@@ -9,6 +10,7 @@ import PostEdit from './pages/PostEdit';
 const API = import.meta.env.VITE_API_URL;
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [loggedIn, setLoggedIn] = useState(false);
   const [checking, setChecking] = useState(true);
 
@@ -52,7 +54,7 @@ function App() {
         {/* 누구나 접근 가능 */}
         <Route
           path="/"
-          element={<PostList loggedIn={loggedIn} onLogout={handleLogout} />}
+          element={<PostList loggedIn={loggedIn} onLogout={handleLogout} theme={theme} onToggleTheme={toggleTheme}/>}
         />
 
         {/* 이미 로그인이면 메인으로 */}

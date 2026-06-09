@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL;
 
-export default function PostList({ loggedIn, onLogout }) {
+export default function PostList({ loggedIn, onLogout, theme, onToggleTheme }) {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
 
@@ -17,8 +17,11 @@ export default function PostList({ loggedIn, onLogout }) {
   return (
     <div className="container">
       <header>
-        <h1>게시판</h1>
-        <div>
+        <h1>웹프로그래밍 프로젝트</h1>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={onToggleTheme}>
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
           {loggedIn ? (
             <>
               <button onClick={() => navigate('/write')}>글쓰기</button>

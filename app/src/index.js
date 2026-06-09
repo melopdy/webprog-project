@@ -29,6 +29,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.json({ status: "healthy", message: "API Server is running 정상 작동 중" });
+});
+
 // ── PostgreSQL 연결 ──────────────────────────────
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,

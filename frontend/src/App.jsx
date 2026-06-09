@@ -20,7 +20,7 @@ function App() {
     // 로컬 스토리지에서 토큰 꺼내기
     const token = localStorage.getItem('token');
     
-    // 토큰이 아예 없다면 서버에 물어볼 필요도 없이 로그인 아웃 상태
+    // 토큰이 아예 없다면 서버에 물어볼 필요도 없이 로그아웃 상태
     if (!token) {
       setLoggedIn(false);
       setChecking(false);

@@ -198,7 +198,6 @@
 .image-wrapper {
   position: relative;
   display: inline-block;
-  border: 1px solid var(--border); /* 밋밋하지 않게 이미지에도 테두리 추가 */
   background: var(--input-bg);
   padding: 4px;
 }

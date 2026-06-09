@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useTheme } from './hooks/useTheme';
-import './app.css';
+import './App.css';
 import Login from './pages/Login';
 import PostList from './pages/PostList';
 import PostWrite from './pages/PostWrite';

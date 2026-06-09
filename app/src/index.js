@@ -270,6 +270,7 @@ app.post('/api/upload', requireLogin, upload.single('image'), async (req, res) =
     // 원본 그대로 업로드
     const blob = await put(originalname, fileBuffer, {
       access: 'public',
+      addRandomSuffix: true, // 같은 이미지를 올렸을 때 토큰 오류 발생, 이를 해결하기 위함
       contentType: mimetype,
       token: process.env.BLOB_READ_WRITE_TOKEN,  // 로컬 오류로 인해 직접 전달로 변경
     });

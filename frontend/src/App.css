@@ -1,19 +1,21 @@
 .counter {
   font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
+  padding: 10px 14px;
+  border-radius: 0;
+  color: var(--color);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s, color 0.2s;
   margin-bottom: 24px;
+  cursor: pointer;
 
   &:hover {
-    border-color: var(--accent-border);
+    border-color: var(--accent);
+    color: var(--accent);
   }
   &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline: none;
+    border-color: var(--accent);
   }
 }
 
@@ -116,19 +118,21 @@
   }
 
   a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
+    color: var(--color);
+    font-size: 15px;
+    border-radius: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     display: flex;
-    padding: 6px 12px;
+    padding: 10px 14px;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    transition: box-shadow 0.3s;
+    transition: border-color 0.2s, color 0.2s; /* 전환 속도 통일 */
 
     &:hover {
-      box-shadow: var(--shadow);
+      border-color: var(--accent);
+      color: var(--accent);
     }
     .button-icon {
       height: 18px;
@@ -188,31 +192,50 @@
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 10px;
+  margin-bottom: 24px;
 }
 
 .image-wrapper {
   position: relative;
   display: inline-block;
+  border: 1px solid var(--border); /* 밋밋하지 않게 이미지에도 테두리 추가 */
+  background: var(--input-bg);
+  padding: 4px;
 }
 
 .remove-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: #ff4d4f;
+  top: 8px;
+  right: 8px;
+  background-color: var(--error);
   color: white;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
+  border: 1px solid var(--error);
+  border-radius: 0;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background 0.2s, color 0.2s;
+}
+
+button.remove-btn:hover {
+  background-color: transparent;
+  color: var(--error);
 }
 
 .remove-btn:hover {
-  background-color: #ff7875;
+  background-color: transparent;
+  color: var(--error);
+}
+
+input[name="title"], 
+input[type="text"] {
+  margin-bottom: 20px;
+}
+
+input[type="file"] {
+  margin-bottom: 20px;
 }
